@@ -117,4 +117,3 @@ BEGIN
         PPrint(c_student.fname || ' ' || c_student.lname);
     END LOOP;
 END;
--- 3-2
