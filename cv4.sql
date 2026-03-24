@@ -117,3 +117,25 @@ BEGIN
         PPrint(c_student.fname || ' ' || c_student.lname);
     END LOOP;
 END;
+
+-- 3-3
+CREATE OR REPLACE FUNCTION FExportPointsCSV(p_year INT) RETURN VARCHAR AS
+    v_ret VARCHAR(2000) := '';
+BEGIN
+    FOR c_student IN (
+        SELECT Student.login, Student.fname, Student.lname, SUM(StudentCourse.points) AS pts
+        FROM Student JOIN StudentCourse ON Student.login = StudentCourse.student_login
+        WHERE year = p_year
+        GROUP BY Student.login, Student.fname, Student.lname
+    ) LOOP
+        IF v_ret IS NOT NULL THEN
+            v_ret := v_ret || CHR(13) || CHR(10);
+        END IF;
+        v_ret := v_ret || c_student.login || ',' || c_student.fname || ',' || c_student.lname || ',' || c_student.pts;            
+    END LOOP;
+    RETURN v_ret;
+END;
+
+BEGIN
+    dbms_output.put_line(FExportPointsCSV(2021));
+END;
